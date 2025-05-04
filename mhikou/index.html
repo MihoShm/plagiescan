@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Plagiarism Checker</title>
+  <style>
+    body {
+      background-color: #022377;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      color: white;
+    }
+
+    .textareas {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    textarea {
+      width: 48%;
+      height: 150px;
+      padding: 10px;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+      background-color: white;
+      color: #000;
+    }
+
+    .file-upload {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .file-upload input {
+      width: 48%;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #97b9d2;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #005599;
+    }
+
+    .result-box {
+      margin-top: 30px;
+      background-color: #0c2d7a;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .score {
+      font-size: 1.3em;
+      margin-bottom: 15px;
+      color: #ffd700;
+      text-align: center;
+    }
+
+    .comparison-container {
+      background-color: white;
+      color: black;
+      padding: 15px;
+      border-radius: 6px;
+      max-height: 300px;
+      overflow-y: auto;
+      border: 2px solid #ccc;
+    }
+
+    .highlight {
+      background-color: yellow;
+    }
+
+    .result-block {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Plagiarism Checker</h2>
+
+  <div class="textareas">
+    <textarea id="text1" placeholder="Enter original text..."></textarea>
+    <textarea id="text2" placeholder="Enter compared text..."></textarea>
+  </div>
+
+  <div class="file-upload">
+    <input type="file" accept=".txt" onchange="loadFile(event, 'text1')" />
+    <input type="file" accept=".txt" onchange="loadFile(event, 'text2')" />
+  </div>
+
+  <div class="button-group">
+    <button onclick="checkPlagiarism()">Check Plagiarism</button>
+    <button onclick="clearAll()">Clear</button>
+  </div>
+
+  <div class="result-box">
+    <div class="score" id="score"></div>
+    <h3 style="text-align:center; color:white;">Comparison Result</h3>
+    <div class="comparison-container">
+      <div id="result1" class="result-block"></div>
+      <hr>
+      <div id="result2" class="result-block"></div>
+    </div>
+  </div>
+
+  <script>
+    function loadFile(event, textareaId) {
+      const file = event.target.files[0];
+      if (file && file.type === "text/plain") {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById(textareaId).value = e.target.result;
+        };
+        reader.readAsText(file);
+      } else {
+        alert("Please upload a valid .txt file.");
+      }
+    }
+
+    function checkPlagiarism() {
+      const text1 = document.getElementById("text1").value.toLowerCase();
+      const text2 = document.getElementById("text2").value.toLowerCase();
+      const words1 = text1.split(/\s+/);
+      const words2 = text2.split(/\s+/);
+
+      let matches = 0;
+      const highlighted1 = words1.map(word => {
+        if (words2.includes(word)) {
+          matches++;
+          return `<span class="highlight">${word}</span>`;
+        }
+        return word;
+      });
+
+      const highlighted2 = words2.map(word => {
+        if (words1.includes(word)) {
+          return `<span class="highlight">${word}</span>`;
+        }
+        return word;
+      });
+
+      const total = Math.max(words2.length, 1);
+      const plagiarismScore = ((matches / total) * 100).toFixed(2);
+
+      document.getElementById("result1").innerHTML = `<p>${highlighted1.join(" ")}</p>`;
+      document.getElementById("result2").innerHTML = `<p>${highlighted2.join(" ")}</p>`;
+      document.getElementById("score").innerText = `Plagiarism Score: ${plagiarismScore}%`;
+    }
+
+    function clearAll() {
+      document.getElementById("text1").value = "";
+      document.getElementById("text2").value = "";
+      document.getElementById("result1").innerHTML = "";
+      document.getElementById("result2").innerHTML = "";
+      document.getElementById("score").innerText = "";
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
